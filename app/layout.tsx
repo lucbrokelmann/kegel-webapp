@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import Link from "next/link";
+import { Manrope, Public_Sans } from "next/font/google";
 import "./globals.css";
+import { Sidebar } from "./components/Sidebar";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
+  weight: ["500", "700", "800"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const publicSans = Public_Sans({
+  variable: "--font-public-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -20,26 +22,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="de"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-zinc-50 dark:bg-black">
-        <nav className="flex gap-4 border-b border-zinc-200 bg-white px-6 py-3 dark:border-zinc-800 dark:bg-zinc-950">
-          <Link href="/" className="font-semibold text-black dark:text-zinc-50">
-            Kegelclub
-          </Link>
-          <Link href="/members" className="text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white">
-            Mitglieder
-          </Link>
-          <Link href="/events" className="text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white">
-            Kegeltermine
-          </Link>
-          <Link href="/analytics" className="text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white">
-            Analysen
-          </Link>
-        </nav>
-        {children}
+    <html lang="de" className={`${manrope.variable} ${publicSans.variable} h-full antialiased`}>
+      <body className="flex min-h-full bg-background font-sans text-foreground">
+        <Sidebar />
+        <main className="flex min-w-0 flex-1 flex-col">{children}</main>
       </body>
     </html>
   );

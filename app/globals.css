@@ -1,26 +1,42 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: oklch(0.985 0.003 264);
+  --foreground: oklch(0.22 0.015 264);
+  --surface: oklch(1 0 0);
+  --surface-sunken: oklch(0.97 0.004 264);
+  --border: oklch(0.9 0.006 264);
+  --border-strong: oklch(0.8 0.008 264);
+  --muted: oklch(0.5 0.012 264);
+  --accent: oklch(0.55 0.15 264);
+  --accent-hover: oklch(0.47 0.15 264);
+  --accent-soft: oklch(0.94 0.03 264);
+  --success: oklch(0.5 0.14 155);
+  --success-soft: oklch(0.94 0.05 155);
+  --danger: oklch(0.55 0.16 25);
+  --danger-soft: oklch(0.95 0.04 25);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: var(--font-public-sans);
+  --font-display: var(--font-manrope);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }

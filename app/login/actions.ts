@@ -21,3 +21,9 @@ export async function login(_prevState: string | null, formData: FormData) {
 
   redirect("/");
 }
+
+export async function logout() {
+  const cookieStore = await cookies();
+  cookieStore.delete(AUTH_COOKIE);
+  redirect("/login");
+}

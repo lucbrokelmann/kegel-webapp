@@ -34,6 +34,7 @@ model Attendance {
   memberId Int
   present  Boolean @default(false)
   strafe   Decimal @default(0)
+  paid     Boolean @default(false)
   event    Event   @relation(fields: [eventId], references: [id])
   member   Member  @relation(fields: [memberId], references: [id])
 
