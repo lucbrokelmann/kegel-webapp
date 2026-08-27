@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Member {
+  id          Int          @id @default(autoincrement())
+  name        String
+  kegelname   String?
+  active      Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  attendances Attendance[]
+}
+
+model Event {
+  id          Int          @id @default(autoincrement())
+  date        DateTime
+  notes       String?
+  attendances Attendance[]
+}
+
+model Attendance {
+  id       Int     @id @default(autoincrement())
+  eventId  Int
+  memberId Int
+  present  Boolean @default(false)
+  strafe   Decimal @default(0)
+  event    Event   @relation(fields: [eventId], references: [id])
+  member   Member  @relation(fields: [memberId], references: [id])
+
+  @@unique([eventId, memberId])
+}
