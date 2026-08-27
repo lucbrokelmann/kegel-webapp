@@ -19,6 +19,25 @@ export async function createEvent(formData: FormData) {
   redirect(`/events/${event.id}`);
 }
 
+export async function updateEvent(formData: FormData) {
+  const eventId = Number(formData.get("eventId"));
+  const date = formData.get("date");
+  const notes = formData.get("notes");
+  if (typeof date !== "string" || !date) return;
+
+  await prisma.event.update({
+    where: { id: eventId },
+    data: {
+      date: new Date(date),
+      notes: typeof notes === "string" && notes.trim() ? notes.trim() : null,
+    },
+  });
+
+  revalidatePath(`/events/${eventId}`);
+  revalidatePath("/events");
+  revalidatePath("/analytics");
+}
+
 async function applyAbsentAverage(eventId: number) {
   const [members, attendances] = await Promise.all([
     prisma.member.findMany({ where: { active: true }, select: { id: true } }),

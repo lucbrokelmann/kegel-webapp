@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { saveAttendance, toggleAttendancePresent } from "../actions";
+import { saveAttendance, toggleAttendancePresent, updateEvent } from "../actions";
 
 const ATTENDANCE_FORM_ID = "attendance-form";
 
@@ -42,10 +42,39 @@ export default async function EventDetailPage({
         <div className="mt-1 font-display text-xl font-extrabold text-foreground">
           Termin {event.date.toLocaleDateString("de-DE")}
         </div>
-        <div className="mt-0.5 text-sm text-muted">{event.notes ?? "–"}</div>
       </div>
 
       <div className="flex flex-1 flex-col gap-4 overflow-auto p-10">
+        <form
+          action={updateEvent}
+          className="flex items-end gap-2 rounded-xl border border-border bg-surface p-4 shadow-[0_1px_2px_oklch(0_0_0/0.04)]"
+        >
+          <input type="hidden" name="eventId" value={event.id} />
+          <div className="flex-shrink-0">
+            <label className="mb-1.5 block text-xs font-semibold text-muted">Datum</label>
+            <input
+              type="date"
+              name="date"
+              required
+              defaultValue={event.date.toISOString().slice(0, 10)}
+              className="rounded-lg border border-border-strong px-3 py-2 text-sm outline-none focus:border-accent"
+            />
+          </div>
+          <div className="flex-1">
+            <label className="mb-1.5 block text-xs font-semibold text-muted">Name / Notiz</label>
+            <input
+              type="text"
+              name="notes"
+              defaultValue={event.notes ?? ""}
+              placeholder="z. B. Vereinsmeisterschaft"
+              className="w-full rounded-lg border border-border-strong px-3 py-2 text-sm outline-none focus:border-accent"
+            />
+          </div>
+          <button type="submit" className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-hover">
+            Speichern
+          </button>
+        </form>
+
         <div className="rounded-xl border border-border bg-surface p-5 shadow-[0_1px_2px_oklch(0_0_0/0.04)]">
           <div className="text-xs font-semibold uppercase tracking-wide text-muted">Durchschnittsstrafe (anwesende Mitglieder)</div>
           <div className="mt-2 font-display text-2xl font-extrabold text-foreground">{avgStrafe.toFixed(2).replace(".", ",")} €</div>
@@ -100,7 +129,7 @@ export default async function EventDetailPage({
                     <td className="border-b border-border px-5 py-2.5 last:border-none">
                       <input
                         type="number"
-                        step="0.5"
+                        step="0.01"
                         min="0"
                         name={`strafe-${member.id}`}
                         form={ATTENDANCE_FORM_ID}

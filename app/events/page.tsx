@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { createEvent } from "./actions";
 import { dayMonth, formatEuro } from "@/lib/stats";
 
+export const dynamic = "force-dynamic";
+
 export default async function EventsPage() {
   const [events, activeMemberCount] = await Promise.all([
     prisma.event.findMany({ orderBy: { date: "desc" }, include: { attendances: true } }),
