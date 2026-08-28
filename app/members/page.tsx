@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createMember, toggleMemberActive } from "./actions";
+import { createMember, toggleMemberActive, updateMember } from "./actions";
 import { getClubOverview } from "@/lib/stats";
 
 const FILTERS = [
@@ -104,38 +104,67 @@ export default async function MembersPage({
               </tr>
             </thead>
             <tbody>
-              {rows.map(({ member, quote }) => (
-                <tr key={member.id}>
-                  <td className="border-b border-border px-5 py-3 text-sm font-semibold text-foreground last:border-none">{member.name}</td>
-                  <td className="border-b border-border px-5 py-3 text-sm text-muted last:border-none">{member.kegelname ?? "–"}</td>
-                  <td className="border-b border-border px-5 py-3 last:border-none">
-                    <div className="flex items-center gap-2">
-                      <div className="h-1.5 w-[90px] overflow-hidden rounded-full bg-surface-sunken">
-                        <div className="h-full rounded-full bg-accent" style={{ width: `${quote}%` }} />
+              {rows.map(({ member, quote }) => {
+                const formId = `member-form-${member.id}`;
+                return (
+                  <tr key={member.id}>
+                    <td className="border-b border-border px-5 py-3 last:border-none">
+                      <form id={formId} action={updateMember}>
+                        <input type="hidden" name="id" value={member.id} />
+                      </form>
+                      <input
+                        type="text"
+                        name="name"
+                        form={formId}
+                        defaultValue={member.name}
+                        required
+                        className="w-full rounded-lg border border-transparent px-2 py-1 text-sm font-semibold text-foreground outline-none hover:border-border-strong focus:border-accent"
+                      />
+                    </td>
+                    <td className="border-b border-border px-5 py-3 last:border-none">
+                      <input
+                        type="text"
+                        name="kegelname"
+                        form={formId}
+                        defaultValue={member.kegelname ?? ""}
+                        placeholder="–"
+                        className="w-full rounded-lg border border-transparent px-2 py-1 text-sm text-muted outline-none hover:border-border-strong focus:border-accent"
+                      />
+                    </td>
+                    <td className="border-b border-border px-5 py-3 last:border-none">
+                      <div className="flex items-center gap-2">
+                        <div className="h-1.5 w-[90px] overflow-hidden rounded-full bg-surface-sunken">
+                          <div className="h-full rounded-full bg-accent" style={{ width: `${quote}%` }} />
+                        </div>
+                        <span className="text-sm text-foreground">{quote}%</span>
                       </div>
-                      <span className="text-sm text-foreground">{quote}%</span>
-                    </div>
-                  </td>
-                  <td className="border-b border-border px-5 py-3 last:border-none">
-                    <span
-                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                        member.active ? "bg-success-soft text-success" : "bg-surface-sunken text-muted"
-                      }`}
-                    >
-                      {member.active ? "Aktiv" : "Inaktiv"}
-                    </span>
-                  </td>
-                  <td className="border-b border-border px-5 py-3 text-right last:border-none">
-                    <form action={toggleMemberActive}>
-                      <input type="hidden" name="id" value={member.id} />
-                      <input type="hidden" name="active" value={String(member.active)} />
-                      <button type="submit" className="text-[13px] font-semibold text-muted hover:text-foreground hover:underline">
-                        {member.active ? "Deaktivieren" : "Aktivieren"}
-                      </button>
-                    </form>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="border-b border-border px-5 py-3 last:border-none">
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                          member.active ? "bg-success-soft text-success" : "bg-surface-sunken text-muted"
+                        }`}
+                      >
+                        {member.active ? "Aktiv" : "Inaktiv"}
+                      </span>
+                    </td>
+                    <td className="border-b border-border px-5 py-3 last:border-none">
+                      <div className="flex items-center justify-end gap-3">
+                        <button type="submit" form={formId} className="text-[13px] font-semibold text-accent hover:underline">
+                          Speichern
+                        </button>
+                        <form action={toggleMemberActive}>
+                          <input type="hidden" name="id" value={member.id} />
+                          <input type="hidden" name="active" value={String(member.active)} />
+                          <button type="submit" className="text-[13px] font-semibold text-muted hover:text-foreground hover:underline">
+                            {member.active ? "Deaktivieren" : "Aktivieren"}
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
               {rows.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-5 py-6 text-center text-sm text-muted">

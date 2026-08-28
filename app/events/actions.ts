@@ -4,6 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 
+function roundToQuarter(value: number) {
+  return Math.round(value * 4) / 4;
+}
+
 export async function createEvent(formData: FormData) {
   const date = formData.get("date");
   const notes = formData.get("notes");
@@ -48,7 +52,7 @@ async function applyAbsentAverage(eventId: number) {
   const presentStrafes = attendances.filter((a) => a.present).map((a) => Number(a.strafe));
   const avgStrafe =
     presentStrafes.length > 0
-      ? Math.round((presentStrafes.reduce((sum, s) => sum + s, 0) / presentStrafes.length) * 100) / 100
+      ? roundToQuarter(presentStrafes.reduce((sum, s) => sum + s, 0) / presentStrafes.length)
       : 0;
 
   await Promise.all(
@@ -105,7 +109,7 @@ export async function saveAttendance(formData: FormData) {
       }
 
       const strafeRaw = formData.get(`strafe-${memberId}`);
-      const strafe = typeof strafeRaw === "string" && strafeRaw ? Number(strafeRaw) : 0;
+      const strafe = typeof strafeRaw === "string" && strafeRaw ? roundToQuarter(Number(strafeRaw)) : 0;
 
       return prisma.attendance.upsert({
         where: { eventId_memberId: { eventId, memberId } },

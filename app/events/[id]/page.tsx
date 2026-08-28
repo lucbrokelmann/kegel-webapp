@@ -24,14 +24,85 @@ export default async function EventDetailPage({
 
   if (!event) notFound();
 
+  const presentMembers = members.filter((m) => m.attendances[0]?.present ?? false);
+  const absentMembers = members.filter((m) => !(m.attendances[0]?.present ?? false));
+
   const presentStrafes = members
     .map((m) => m.attendances[0])
     .filter((a) => a?.present)
     .map((a) => Number(a!.strafe));
   const avgStrafe =
     presentStrafes.length > 0
-      ? Math.round((presentStrafes.reduce((sum, s) => sum + s, 0) / presentStrafes.length) * 100) / 100
+      ? Math.round((presentStrafes.reduce((sum, s) => sum + s, 0) / presentStrafes.length) * 4) / 4
       : 0;
+
+  const renderMemberRow = (member: (typeof members)[number]) => {
+    const attendance = member.attendances[0];
+    const isPresent = attendance?.present ?? false;
+    return (
+      <tr key={member.id}>
+        <td className="border-b border-border px-5 py-2.5 text-sm font-semibold text-foreground last:border-none">
+          <input type="hidden" name="memberId" value={member.id} form={ATTENDANCE_FORM_ID} />
+          {member.kegelname ?? member.name}
+        </td>
+        <td className="border-b border-border px-5 py-2.5 last:border-none">
+          <form action={toggleAttendancePresent}>
+            <input type="hidden" name="eventId" value={event.id} />
+            <input type="hidden" name="memberId" value={member.id} />
+            <input type="hidden" name="present" value={String(isPresent)} />
+            <button
+              type="submit"
+              className={`relative inline-flex h-[22px] w-10 cursor-pointer items-center rounded-full border transition-colors ${
+                isPresent ? "border-success bg-success-soft" : "border-border-strong bg-surface-sunken"
+              }`}
+              aria-pressed={isPresent}
+              aria-label="Anwesenheit umschalten"
+            >
+              <span
+                className={`absolute h-4 w-4 rounded-full transition-all ${
+                  isPresent ? "left-[20px] bg-success" : "left-0.5 bg-muted"
+                }`}
+              />
+            </button>
+          </form>
+        </td>
+        <td className="border-b border-border px-5 py-2.5 last:border-none">
+          <input
+            type="number"
+            step="0.25"
+            min="0"
+            name={`strafe-${member.id}`}
+            form={ATTENDANCE_FORM_ID}
+            defaultValue={isPresent ? Number(attendance!.strafe) : avgStrafe}
+            disabled={!isPresent}
+            className="w-24 rounded-lg border border-border-strong px-2.5 py-1.5 text-sm outline-none focus:border-accent disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-muted"
+          />
+          {!isPresent && <div className="mt-1 text-xs text-muted">Ø automatisch</div>}
+        </td>
+        <td className="border-b border-border px-5 py-2.5 last:border-none">
+          <label className="relative inline-flex h-[22px] w-10 cursor-pointer items-center">
+            <input
+              type="checkbox"
+              name={`paid-${member.id}`}
+              form={ATTENDANCE_FORM_ID}
+              defaultChecked={attendance?.paid ?? false}
+              className="peer sr-only"
+            />
+            <span className="absolute inset-0 rounded-full border border-border-strong bg-surface-sunken transition-colors peer-checked:border-success peer-checked:bg-success-soft" />
+            <span className="absolute left-0.5 h-4 w-4 rounded-full bg-muted transition-all peer-checked:left-[20px] peer-checked:bg-success" />
+          </label>
+        </td>
+      </tr>
+    );
+  };
+
+  const renderGroupHeader = (label: string) => (
+    <tr>
+      <td colSpan={4} className="border-b border-border bg-surface-sunken px-5 py-1.5 text-[11px] font-bold uppercase tracking-wide text-muted">
+        {label}
+      </td>
+    </tr>
+  );
 
   return (
     <>
@@ -96,65 +167,10 @@ export default async function EventDetailPage({
               </tr>
             </thead>
             <tbody>
-              {members.map((member) => {
-                const attendance = member.attendances[0];
-                const isPresent = attendance?.present ?? false;
-                return (
-                  <tr key={member.id}>
-                    <td className="border-b border-border px-5 py-2.5 text-sm font-semibold text-foreground last:border-none">
-                      <input type="hidden" name="memberId" value={member.id} form={ATTENDANCE_FORM_ID} />
-                      {member.kegelname ?? member.name}
-                    </td>
-                    <td className="border-b border-border px-5 py-2.5 last:border-none">
-                      <form action={toggleAttendancePresent}>
-                        <input type="hidden" name="eventId" value={event.id} />
-                        <input type="hidden" name="memberId" value={member.id} />
-                        <input type="hidden" name="present" value={String(isPresent)} />
-                        <button
-                          type="submit"
-                          className={`relative inline-flex h-[22px] w-10 cursor-pointer items-center rounded-full border transition-colors ${
-                            isPresent ? "border-success bg-success-soft" : "border-border-strong bg-surface-sunken"
-                          }`}
-                          aria-pressed={isPresent}
-                          aria-label="Anwesenheit umschalten"
-                        >
-                          <span
-                            className={`absolute h-4 w-4 rounded-full transition-all ${
-                              isPresent ? "left-[20px] bg-success" : "left-0.5 bg-muted"
-                            }`}
-                          />
-                        </button>
-                      </form>
-                    </td>
-                    <td className="border-b border-border px-5 py-2.5 last:border-none">
-                      <input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        name={`strafe-${member.id}`}
-                        form={ATTENDANCE_FORM_ID}
-                        defaultValue={isPresent ? Number(attendance!.strafe) : avgStrafe}
-                        disabled={!isPresent}
-                        className="w-24 rounded-lg border border-border-strong px-2.5 py-1.5 text-sm outline-none focus:border-accent disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-muted"
-                      />
-                      {!isPresent && <div className="mt-1 text-xs text-muted">Ø automatisch</div>}
-                    </td>
-                    <td className="border-b border-border px-5 py-2.5 last:border-none">
-                      <label className="relative inline-flex h-[22px] w-10 cursor-pointer items-center">
-                        <input
-                          type="checkbox"
-                          name={`paid-${member.id}`}
-                          form={ATTENDANCE_FORM_ID}
-                          defaultChecked={attendance?.paid ?? false}
-                          className="peer sr-only"
-                        />
-                        <span className="absolute inset-0 rounded-full border border-border-strong bg-surface-sunken transition-colors peer-checked:border-success peer-checked:bg-success-soft" />
-                        <span className="absolute left-0.5 h-4 w-4 rounded-full bg-muted transition-all peer-checked:left-[20px] peer-checked:bg-success" />
-                      </label>
-                    </td>
-                  </tr>
-                );
-              })}
+              {renderGroupHeader(`Anwesend (${presentMembers.length})`)}
+              {presentMembers.map(renderMemberRow)}
+              {renderGroupHeader(`Abwesend (${absentMembers.length})`)}
+              {absentMembers.map(renderMemberRow)}
             </tbody>
           </table>
         </div>

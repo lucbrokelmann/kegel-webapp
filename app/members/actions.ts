@@ -17,6 +17,26 @@ export async function createMember(formData: FormData) {
   revalidatePath("/members");
 }
 
+export async function updateMember(formData: FormData) {
+  const id = Number(formData.get("id"));
+  const name = formData.get("name");
+  const kegelname = formData.get("kegelname");
+  if (typeof name !== "string" || !name.trim()) return;
+
+  await prisma.member.update({
+    where: { id },
+    data: {
+      name: name.trim(),
+      kegelname: typeof kegelname === "string" && kegelname.trim() ? kegelname.trim() : null,
+    },
+  });
+
+  revalidatePath("/members");
+  revalidatePath("/analytics");
+  revalidatePath("/payments");
+  revalidatePath("/");
+}
+
 export async function toggleMemberActive(formData: FormData) {
   const id = Number(formData.get("id"));
   const active = formData.get("active") === "true";
