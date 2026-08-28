@@ -3,7 +3,7 @@ import { getClubOverview, formatEuro, dayMonth } from "@/lib/stats";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const { members, activeStats, totalEvents, completedEventCount, avgQuote, totalStrafe, upcomingEvents, leaderboard } =
+  const { members, activeStats, totalEvents, completedEventCount, avgQuote, totalStrafe, paidStrafe, upcomingEvents, leaderboard } =
     await getClubOverview();
 
   return (
@@ -16,7 +16,7 @@ export default async function Home() {
       </div>
 
       <div className="flex flex-1 flex-col gap-5 overflow-auto p-10">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-5 gap-4">
           <div className="rounded-xl border border-border bg-surface p-5 shadow-[0_1px_2px_oklch(0_0_0/0.04)]">
             <div className="text-xs font-semibold uppercase tracking-wide text-muted">Mitglieder gesamt</div>
             <div className="mt-2 font-display text-2xl font-extrabold text-foreground">{members.length}</div>
@@ -34,6 +34,11 @@ export default async function Home() {
           <div className="rounded-xl border border-border bg-surface p-5 shadow-[0_1px_2px_oklch(0_0_0/0.04)]">
             <div className="text-xs font-semibold uppercase tracking-wide text-muted">Strafenkasse</div>
             <div className="mt-2 font-display text-2xl font-extrabold text-foreground">{formatEuro(totalStrafe)} €</div>
+          </div>
+          <div className="rounded-xl border border-border bg-surface p-5 shadow-[0_1px_2px_oklch(0_0_0/0.04)]">
+            <div className="text-xs font-semibold uppercase tracking-wide text-muted">Bereits eingezahlt</div>
+            <div className="mt-2 font-display text-2xl font-extrabold text-foreground">{formatEuro(paidStrafe)} €</div>
+            <div className="mt-1.5 text-xs text-muted">von {formatEuro(totalStrafe)} €</div>
           </div>
         </div>
 

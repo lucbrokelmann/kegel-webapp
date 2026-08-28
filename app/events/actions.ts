@@ -126,6 +126,21 @@ export async function saveAttendance(formData: FormData) {
   revalidatePath("/payments");
 }
 
+export async function roundAllStrafenValues() {
+  const attendances = await prisma.attendance.findMany();
+
+  const updates = attendances
+    .map((a) => ({ id: a.id, rounded: roundToQuarter(Number(a.strafe)) }))
+    .filter((a, i) => Math.abs(a.rounded - Number(attendances[i].strafe)) > 0.001);
+
+  await Promise.all(updates.map((u) => prisma.attendance.update({ where: { id: u.id }, data: { strafe: u.rounded } })));
+
+  revalidatePath("/");
+  revalidatePath("/analytics");
+  revalidatePath("/payments");
+  revalidatePath("/events");
+}
+
 export async function toggleAttendancePaid(formData: FormData) {
   const eventId = Number(formData.get("eventId"));
   const memberId = Number(formData.get("memberId"));

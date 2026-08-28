@@ -24,6 +24,10 @@ export async function getClubOverview() {
     ? Math.round(activeStats.reduce((sum, s) => sum + s.quote, 0) / activeStats.length)
     : 0;
   const totalStrafe = memberStats.reduce((sum, s) => sum + s.strafeSum, 0);
+  const paidStrafe = members.reduce(
+    (sum, m) => sum + m.attendances.filter((a) => a.paid).reduce((s, a) => s + Number(a.strafe), 0),
+    0
+  );
 
   const upcomingEvents = events.filter((e) => e.date >= now).slice(0, 3);
   const leaderboard = [...activeStats].sort((a, b) => b.quote - a.quote).slice(0, 5);
@@ -38,6 +42,7 @@ export async function getClubOverview() {
     completedEventCount,
     avgQuote,
     totalStrafe,
+    paidStrafe,
     upcomingEvents,
     leaderboard,
     topMember,

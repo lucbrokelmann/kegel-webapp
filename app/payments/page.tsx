@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatEuro } from "@/lib/stats";
-import { toggleAttendancePaid } from "@/app/events/actions";
+import { toggleAttendancePaid, roundAllStrafenValues } from "@/app/events/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -149,6 +149,18 @@ export default async function PaymentsPage({
               </table>
             </div>
           ))}
+
+        <div className="mt-4 flex items-center justify-between rounded-xl border border-border bg-surface-sunken p-4 text-xs text-muted">
+          <span>
+            Einmalige Bereinigung: rundet alle gespeicherten Strafenwerte auf 0,25-€-Schritte (z. B. für Altdaten von vor
+            dieser Regel).
+          </span>
+          <form action={roundAllStrafenValues}>
+            <button type="submit" className="flex-shrink-0 font-semibold text-accent hover:underline">
+              Alle Strafen auf 0,25 € runden
+            </button>
+          </form>
+        </div>
       </div>
     </>
   );
