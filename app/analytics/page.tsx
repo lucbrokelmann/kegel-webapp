@@ -3,7 +3,7 @@ import { getClubOverview, formatEuro } from "@/lib/stats";
 export const dynamic = "force-dynamic";
 
 export default async function AnalyticsPage() {
-  const { memberStats, events, avgQuote, totalStrafe, topMember } = await getClubOverview();
+  const { memberStats, events, avgQuote, completedEventCount, totalStrafe, topMember } = await getClubOverview();
 
   const byQuote = [...memberStats].sort((a, b) => b.quote - a.quote);
 
@@ -21,6 +21,7 @@ export default async function AnalyticsPage() {
           <div className="rounded-xl border border-border bg-surface p-5 shadow-[0_1px_2px_oklch(0_0_0/0.04)]">
             <div className="text-xs font-semibold uppercase tracking-wide text-muted">Ø Anwesenheitsquote</div>
             <div className="mt-2 font-display text-2xl font-extrabold text-foreground">{avgQuote}%</div>
+            <div className="mt-1.5 text-xs text-muted">{completedEventCount} abgeschlossene Termine</div>
           </div>
           <div className="rounded-xl border border-border bg-surface p-5 shadow-[0_1px_2px_oklch(0_0_0/0.04)]">
             <div className="text-xs font-semibold uppercase tracking-wide text-muted">Strafenkasse</div>

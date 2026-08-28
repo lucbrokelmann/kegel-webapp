@@ -3,7 +3,7 @@ import { getClubOverview, formatEuro, dayMonth } from "@/lib/stats";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const { members, activeStats, totalEvents, avgQuote, totalStrafe, upcomingEvents, leaderboard } =
+  const { members, activeStats, totalEvents, completedEventCount, avgQuote, totalStrafe, upcomingEvents, leaderboard } =
     await getClubOverview();
 
   return (
@@ -29,6 +29,7 @@ export default async function Home() {
           <div className="rounded-xl border border-border bg-surface p-5 shadow-[0_1px_2px_oklch(0_0_0/0.04)]">
             <div className="text-xs font-semibold uppercase tracking-wide text-muted">Ø Anwesenheit</div>
             <div className="mt-2 font-display text-2xl font-extrabold text-foreground">{avgQuote}%</div>
+            <div className="mt-1.5 text-xs text-muted">{completedEventCount} abgeschlossene Termine</div>
           </div>
           <div className="rounded-xl border border-border bg-surface p-5 shadow-[0_1px_2px_oklch(0_0_0/0.04)]">
             <div className="text-xs font-semibold uppercase tracking-wide text-muted">Strafenkasse</div>

@@ -8,9 +8,13 @@ export async function getClubOverview() {
 
   const totalEvents = events.length;
 
+  const now = new Date();
+  const completedEventIds = new Set(events.filter((e) => e.date < now).map((e) => e.id));
+  const completedEventCount = completedEventIds.size;
+
   const memberStats = members.map((member) => {
-    const presentCount = member.attendances.filter((a) => a.present).length;
-    const quote = totalEvents > 0 ? Math.round((presentCount / totalEvents) * 100) : 0;
+    const presentCount = member.attendances.filter((a) => a.present && completedEventIds.has(a.eventId)).length;
+    const quote = completedEventCount > 0 ? Math.round((presentCount / completedEventCount) * 100) : 0;
     const strafeSum = member.attendances.reduce((sum, a) => sum + Number(a.strafe), 0);
     return { member, presentCount, quote, strafeSum };
   });
@@ -21,12 +25,23 @@ export async function getClubOverview() {
     : 0;
   const totalStrafe = memberStats.reduce((sum, s) => sum + s.strafeSum, 0);
 
-  const now = new Date();
   const upcomingEvents = events.filter((e) => e.date >= now).slice(0, 3);
   const leaderboard = [...activeStats].sort((a, b) => b.quote - a.quote).slice(0, 5);
   const topMember = leaderboard[0];
 
-  return { members, events, memberStats, activeStats, totalEvents, avgQuote, totalStrafe, upcomingEvents, leaderboard, topMember };
+  return {
+    members,
+    events,
+    memberStats,
+    activeStats,
+    totalEvents,
+    completedEventCount,
+    avgQuote,
+    totalStrafe,
+    upcomingEvents,
+    leaderboard,
+    topMember,
+  };
 }
 
 export function formatEuro(amount: number) {
